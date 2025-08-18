@@ -39,11 +39,12 @@ from Deeploy.DeeployTypes import NetworkContext, NodeTemplate, OperatorRepresent
 
 referenceTemplate = NodeTemplate("""
 <%
-                                 
+    GAPInputSampleSize = C * H * W
+    GAPOutputSampleSize = C                   
 %>
 
 // Global Average Pool (Name: ${nodeName}, Op: ${nodeOp})
-BEGIN
+BEGIN_SINGLE_CORE
     ${x_type.typeName} ref_${y}_${x} = ${x};
     ${y_type.typeName} ref_${y}_${y} = ${y};
                                  
@@ -53,6 +54,9 @@ BEGIN
             ${C}, ${H}, ${W},
             ref_${y}_${y}
         );
+                                 
+        ref_${y}_${x} += ${GAPInputSampleSize};
+        ref_${y}_${y} += ${GAPOutputSampleSize};
     }
 END_SINGLE_CORE
 """)

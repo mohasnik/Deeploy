@@ -296,7 +296,7 @@ BasicDequantBindings = [
 
 ## Binding for Global Average pool:
 BasicGAPoolBinding = [
-    NodeBinding(GlobalAveragePoolChecker([float32_t], [float32_t]), 
+    NodeBinding(GlobalAveragePoolChecker([PointerClass(float32_t)], [PointerClass(float32_t)]), 
                 GlobalAveragePoolTemplate.referenceTemplate, 
                 BasicTransformer),
 ]

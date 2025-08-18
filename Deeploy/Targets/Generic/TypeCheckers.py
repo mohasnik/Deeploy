@@ -481,7 +481,8 @@ class GlobalAveragePoolChecker(SignPropTypeChecker):
         super().__init__(input_types, output_types)
 
     def _inferNumLevels(self, inputs: List[VariableBuffer], operatorRepresentation: OperatorRepresentation) -> Optional[List[int]]:
-        return super()._inferNumLevels(inputs, operatorRepresentation)
+        # return super()._inferNumLevels(inputs, operatorRepresentation)
+        return [inputs[0].nLevels]
     
     def _inferSignedness(self, inputs: List[VariableBuffer], operatorRepresentation: OperatorRepresentation) -> Optional[List[int]]:
         # return super()._inferSignedness(inputs, operatorRepresentation)
