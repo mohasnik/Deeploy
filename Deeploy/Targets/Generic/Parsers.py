@@ -257,11 +257,24 @@ class GlobalAveragePoolParser(NodeParser):
 
         if ret:
             pass
-        
+
         return ret
 
     def parseNodeCtxt(self, ctxt: NetworkContext, node: gs.Node, channels_first: bool = True) -> Tuple[NetworkContext, bool]:
-        return super().parseNodeCtxt(ctxt, node, channels_first)
+        
+
+        x = ctxt.lookup(node.inputs[0].name)
+        y = ctxt.lookup(node.outputs[0].name)
+
+        self.operatorRepresentation['x'] = x.name
+        self.operatorRepresentation['y'] = y.name
+        ## Sizes may be reuired for the kernel
+        self.operatorRepresentation['batch'] = x.shape[0]
+        self.operatorRepresentation['C'] = x.shape[1]
+        self.operatorRepresentation['H'] = x.shape[2]
+        self.operatorRepresentation['W'] = x.shape[3]
+
+        return ctxt, True
         
         
         
