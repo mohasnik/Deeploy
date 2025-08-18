@@ -475,6 +475,21 @@ class MaxPoolChecker(SignPropTypeChecker):
         else:
             return [False]
 
+## Added : Global Average pool Checker (MUST BE MODIFIED IF REQUIRED)
+class GlobalAveragePoolChecker(SignPropTypeChecker):
+    def __init__(self, input_types: Sequence[Type[Pointer]], output_types: Sequence[Type[Pointer]]):
+        super().__init__(input_types, output_types)
+
+    def _inferNumLevels(self, inputs: List[VariableBuffer], operatorRepresentation: OperatorRepresentation) -> Optional[List[int]]:
+        return super()._inferNumLevels(inputs, operatorRepresentation)
+    
+    def _inferSignedness(self, inputs: List[VariableBuffer], operatorRepresentation: OperatorRepresentation) -> Optional[List[int]]:
+        # return super()._inferSignedness(inputs, operatorRepresentation)
+        if inputs[0]._signed:
+            return [True]
+        else:
+            return [False]
+
 
 class ConvChecker(SignPropTypeChecker):
 

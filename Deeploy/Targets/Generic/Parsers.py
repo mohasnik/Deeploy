@@ -244,6 +244,27 @@ class MaxPoolParser(NodeParser):
 
         return ctxt, True
 
+class GlobalAveragePoolParser(NodeParser):
+    def __init__(self):
+        super().__init__()
+
+    def parseNode(self, node: gs.Node) -> bool:
+
+        ret = all(
+            len(node.input) == 1,
+            len(node.output) >= 1
+        )
+
+        if ret:
+            pass
+        
+        return ret
+
+    def parseNodeCtxt(self, ctxt: NetworkContext, node: gs.Node, channels_first: bool = True) -> Tuple[NetworkContext, bool]:
+        return super().parseNodeCtxt(ctxt, node, channels_first)
+        
+        
+        
 
 class MaxPool2DParser(MaxPoolParser):
 
