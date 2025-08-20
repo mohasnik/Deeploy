@@ -41,7 +41,6 @@ void GAPool_fp32_fp32_NCHW(float32_t const *__restrict__ pSrcA,
                 average += pSrcA[c * H * W + h * W + w];
             }
         }
-        printf("%f\n", average);
         pDstC[c] = average / (((float)H) * ((float)W));
     }
 
