@@ -45,18 +45,18 @@ referenceTemplate = NodeTemplate("""
 
 // Global Average Pool (Name: ${nodeName}, Op: ${nodeOp})
 BEGIN_SINGLE_CORE
-    ${x_type.typeName} ref_${y}_${x} = ${x};
-    ${y_type.typeName} ref_${y}_${y} = ${y};
+    ${data_in_type.typeName} ref_${data_out}_${data_in} = ${data_in};
+    ${data_out_type.typeName} ref_${data_out}_${data_out} = ${data_out};
                                  
     for (uint32_t n = 0; n < ${batch}; n++) {
-        GAPool_fp${x_type.referencedType.typeWidth}_fp${y_type.referencedType.typeWidth}_NCHW (
-            ref_${y}_${x},
+        GAPool_fp${data_in_type.referencedType.typeWidth}_fp${data_out_type.referencedType.typeWidth}_NCHW (
+            ref_${data_out}_${data_in},
             ${C}, ${H}, ${W},
-            ref_${y}_${y}
+            ref_${data_out}_${data_out}
         );
                                  
-        ref_${y}_${x} += ${GAPInputSampleSize};
-        ref_${y}_${y} += ${GAPOutputSampleSize};
+        ref_${data_out}_${data_in} += ${GAPInputSampleSize};
+        ref_${data_out}_${data_out} += ${GAPOutputSampleSize};
     }
 END_SINGLE_CORE
 """)

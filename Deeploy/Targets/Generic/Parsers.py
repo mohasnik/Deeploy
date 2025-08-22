@@ -256,6 +256,9 @@ class GlobalAveragePoolParser(NodeParser):
         ])
 
         if ret:
+            ## No context-free attributes is available 
+            # for global average pool layer
+
             pass
 
         return ret
@@ -263,16 +266,17 @@ class GlobalAveragePoolParser(NodeParser):
     def parseNodeCtxt(self, ctxt: NetworkContext, node: gs.Node, channels_first: bool = True) -> Tuple[NetworkContext, bool]:
         
 
-        x = ctxt.lookup(node.inputs[0].name)
-        y = ctxt.lookup(node.outputs[0].name)
+        data_in = ctxt.lookup(node.inputs[0].name)
+        data_out = ctxt.lookup(node.outputs[0].name)
 
-        self.operatorRepresentation['x'] = x.name
-        self.operatorRepresentation['y'] = y.name
-        ## Sizes may be reuired for the kernel
-        self.operatorRepresentation['batch'] = x.shape[0]
-        self.operatorRepresentation['C'] = x.shape[1]
-        self.operatorRepresentation['H'] = x.shape[2]
-        self.operatorRepresentation['W'] = x.shape[3]
+        self.operatorRepresentation['data_in'] = data_in.name
+        self.operatorRepresentation['data_out'] = data_out.name
+
+        
+        self.operatorRepresentation['batch'] = data_in.shape[0]
+        self.operatorRepresentation['C'] = data_in.shape[1]
+        self.operatorRepresentation['H'] = data_in.shape[2]
+        self.operatorRepresentation['W'] = data_in.shape[3]
 
         return ctxt, True
         
