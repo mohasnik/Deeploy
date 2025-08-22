@@ -120,8 +120,8 @@ class GAPLayerTester():
 
 
 def main():
-    tester = GAPLayerTester(seed=0)
-    tester.MultipleTest(2, 10, 12, False)
+    tester = GAPLayerTester(seed=21)
+    tester.MultipleTest(1, 50, 12, False)
 
 if __name__ == "__main__" :
     main()
