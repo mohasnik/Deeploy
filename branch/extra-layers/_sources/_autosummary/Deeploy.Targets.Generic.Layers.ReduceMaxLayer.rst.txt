@@ -1,0 +1,47 @@
+.. SPDX-FileCopyrightText: 2024 ETH Zurich and University of Bologna
+..
+.. SPDX-License-Identifier: Apache-2.0
+
+Deeploy.Targets.Generic.Layers.ReduceMaxLayer
+=============================================
+
+.. currentmodule:: Deeploy.Targets.Generic.Layers
+
+.. autoclass:: ReduceMaxLayer
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~ReduceMaxLayer.__init__
+      ~ReduceMaxLayer.bind
+      ~ReduceMaxLayer.broadcast
+      ~ReduceMaxLayer.codeTransform
+      ~ReduceMaxLayer.computeOps
+      ~ReduceMaxLayer.computeShapes
+      ~ReduceMaxLayer.discardCurrentMapper
+      ~ReduceMaxLayer.generate
+      ~ReduceMaxLayer.parse
+      ~ReduceMaxLayer.resetDiscardedMappers
+      ~ReduceMaxLayer.typeCheck
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ReduceMaxLayer.maps
+      ~ReduceMaxLayer.mapper
+      ~ReduceMaxLayer.discardedMappers
+      ~ReduceMaxLayer.node
+   
+   

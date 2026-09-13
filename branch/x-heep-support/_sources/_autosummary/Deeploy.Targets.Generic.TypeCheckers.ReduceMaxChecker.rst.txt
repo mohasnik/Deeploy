@@ -1,0 +1,41 @@
+.. SPDX-FileCopyrightText: 2024 ETH Zurich and University of Bologna
+..
+.. SPDX-License-Identifier: Apache-2.0
+
+Deeploy.Targets.Generic.TypeCheckers.ReduceMaxChecker
+=====================================================
+
+.. currentmodule:: Deeploy.Targets.Generic.TypeCheckers
+
+.. autoclass:: ReduceMaxChecker
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~ReduceMaxChecker.__init__
+      ~ReduceMaxChecker.annotateDict
+      ~ReduceMaxChecker.checkOutputType
+      ~ReduceMaxChecker.signature
+      ~ReduceMaxChecker.typeCheck
+      ~ReduceMaxChecker.typeCheckNodeInputs
+      ~ReduceMaxChecker.typeInferGlobalCtxt
+      ~ReduceMaxChecker.typeInferOutput
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ReduceMaxChecker.typeDict
+   
+   
