@@ -14,7 +14,7 @@ def setup_xheep_defaults(parser):
     """
     parser.set_defaults(
         toolchain="GCC",
-        toolchain_install_dir="/app/tools/riscv/",
+        toolchain_install_dir="/app/install/riscv",
         skipsim=False,       ## TODO : Remove this default after adding verilator simulation
         cmake=[
             "-DXHEEP_HOME=/app/x-heep",
