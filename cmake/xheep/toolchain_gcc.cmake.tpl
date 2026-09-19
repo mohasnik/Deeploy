@@ -4,11 +4,13 @@
 #
 # File: toolchain_gcc.cmake
 # Author: Mohammad Hossein Nikkhah
-# Description:
+# Description: 
 
+<%
+  cpu = xheep.cpu()
+%>
 
-
-
+<%text>
 set(TOOLCHAIN_PREFIX ${TOOLCHAIN_INSTALL_DIR}/bin/riscv32-unknown-elf)
 
 set(CMAKE_SYSTEM_NAME Generic)
@@ -22,10 +24,14 @@ set(CMAKE_AR ${TOOLCHAIN_PREFIX}-ar)
 set(SIZE ${TOOLCHAIN_PREFIX}-size)
 
 
-
+</%text>
+% if cpu.get_param("fpu"):
 set(ISA rv32imfc_zicsr CACHE STRING "X-HEEP RISC-V ISA")
+% else:
+set(ISA rv32imc_zicsr CACHE STRING "X-HEEP RISC-V ISA")
+% endif
 
-
+<%text>
 set(ABI ilp32 CACHE STRING "X-HEEP RISC-V ABI")
 set(CMAKE_SYSTEM_PROCESSOR ${ISA} CACHE STRING "X-HEEP RISC-V ISA")
 
@@ -61,4 +67,4 @@ link_libraries(
 
 add_compile_definitions(__LINK_LD)
 add_compile_definitions(__TOOLCHAIN_GCC__)
-
+</%text>
