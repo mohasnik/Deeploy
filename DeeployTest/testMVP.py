@@ -69,13 +69,12 @@ def setupDeployer(graph: gs.Graph, memoryHierarchy: MemoryHierarchy, defaultTarg
     inputs = np.load(f'{args.dir}/inputs.npz')
     tensors = graph.tensors()
 
-    # Load as int64 and infer types later
+    # Load as float64 for uniform handling, but preserve original dtypes for type inference
+    test_input_original_dtypes = [inputs[x].dtype for x in inputs.files]
     test_inputs = [inputs[x].reshape(-1).astype(np.float64) for x in inputs.files]
 
     platform, signProp = mapPlatform(args.platform)
 
-    if args.enable_3x3:
-        platform.engines[0].enable3x3 = True
     if args.enableStrides:
         platform.engines[0].enableStrides = True
 
@@ -84,7 +83,8 @@ def setupDeployer(graph: gs.Graph, memoryHierarchy: MemoryHierarchy, defaultTarg
         cluster.n_cores = args.cores
 
     for index, num in enumerate(test_inputs):
-        _type, offset = inferTypeAndOffset(num, signProp)
+        original_dtype = test_input_original_dtypes[index] if index < len(test_input_original_dtypes) else None
+        _type, offset = inferTypeAndOffset(num, signProp, original_dtype = original_dtype)
         inputTypes[f"input_{index}"] = _type
         inputOffsets[f"input_{index}"] = offset
 
@@ -158,11 +158,6 @@ if __name__ == '__main__':
                         action = "store_true",
                         default = False,
                         help = 'Adds weight memory and neureka engine color\n')
-    parser.add_argument('--enable-3x3',
-                        dest = "enable_3x3",
-                        action = "store_true",
-                        default = False,
-                        help = 'Adds EXPERIMENTAL support for 3x3 convolutions on N-EUREKA\n')
     parser.add_argument('--enableStrides',
                         dest = "enableStrides",
                         action = "store_true",
@@ -248,7 +243,8 @@ if __name__ == '__main__':
     if args.debug:
         test_inputs, test_outputs, graph = generateDebugConfig(inputs, outputs, activations, graph)
     else:
-        # Load as int64 and infer types later
+        # Load as float64 for uniform handling, but preserve original dtypes for type inference
+        test_input_original_dtypes = [inputs[x].dtype for x in inputs.files]
         test_inputs = [inputs[x].reshape(-1).astype(np.float64) for x in inputs.files]
         test_outputs = [outputs[x].reshape(-1).astype(np.float64) for x in outputs.files]
 
@@ -287,7 +283,8 @@ if __name__ == '__main__':
     log.debug(f"Deployer: {deployer}")
 
     for index, num in enumerate(test_inputs):
-        _type, offset = inferTypeAndOffset(num, signProp)
+        original_dtype = test_input_original_dtypes[index] if index < len(test_input_original_dtypes) else None
+        _type, offset = inferTypeAndOffset(num, signProp, original_dtype = original_dtype)
         inputTypes[f"input_{index}"] = _type
         inputOffsets[f"input_{index}"] = offset
 

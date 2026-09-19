@@ -106,7 +106,7 @@ def _prependSqueezeDims(tensor: gs.Tensor, name: str, axis: Union[int, Sequence[
 
 # Permute (0,1,2,3,...,N-2,N-1) -> (0,1,2,3,...,N-1,N-2)
 def _swapLastTwoDimsPermutation(N: int) -> List[int]:
-    assert N >= 2, "N needs to be larger then 2"
+    assert N >= 2, "N needs to be larger than 2"
     return [*range(N - 2), N - 1, N - 2]
 
 
@@ -347,6 +347,117 @@ def _PULP_NCHWtoNHWC_dw_fun(graph: gs.Graph, match: Match, name: str, default_ch
     return graph
 
 
+def _hasUnsignedInput(node: gs.Node) -> bool:
+    # The kernel this gate selects takes u8 activations. Types are not resolved
+    # yet here, so the producer's `signed` attribute is the only evidence, and an
+    # input with no producer -- a graph input, a constant -- has to count as no:
+    # committing the layout for a node whose binding then does not exist leaves a
+    # graph the parser cannot map at all, since the output transpose is gone.
+    # Walk back through the transposes the earlier layout passes inserted: the
+    # producer that carries `signed` is the compute node behind them.
+    tensor = node.inputs[0]
+    for _ in range(4):
+        producers = tensor.inputs
+        if len(producers) != 1:
+            return False
+        if producers[0].op != "Transpose":
+            break
+        tensor = producers[0].inputs[0]
+    else:
+        return False
+    signed = producers[0].attrs.get("signed")
+    values = getattr(signed, "values", signed)
+    return values is not None and not np.any(values)
+
+
+def _hasDepthwiseConsumer(node: gs.Node, channels: int) -> bool:
+    # stated without reading a layout: this pass may already have relabelled the
+    # consumer while leaving its input channels-first
+    consumers = node.outputs[0].outputs
+    if len(consumers) != 1 or consumers[0].op not in ["Conv", "RequantizedConv"]:
+        return False
+    return consumers[0].attrs.get("group", 1) == channels
+
+
+def _hasUnsignedOutput(node: gs.Node) -> bool:
+    # The two predicates below decide a layout before the types are resolved, and their
+    # kernels exist for an unsigned output only. A node left channels-first with no
+    # kernel to read it is a parse failure, so an absent attribute has to mean no.
+    signed = node.attrs.get("signed")
+    values = getattr(signed, "values", signed)
+    return values is not None and not np.any(values)
+
+
+def isPULPPointwise(node: gs.Node) -> bool:
+    """1x1 / stride 1 / no-pad convolutions the PULP kernel can write channels-first.
+
+    The lowering pass, the parser and the template must agree on this exactly, or
+    a node ends up producing one layout and being read as the other.
+    """
+    if node.op != "RequantizedConv" or node.attrs.get("group", 1) != 1:
+        return False
+    if not _hasUnsignedOutput(node):
+        return False
+    if len(node.inputs) < 2 or not isinstance(node.inputs[1], gs.Constant):
+        return False
+    if list(node.attrs.get("kernel_shape", [])) != [1, 1]:
+        return False
+    if list(node.attrs.get("strides", [1, 1])) != [1, 1]:
+        return False
+    if any(pad != 0 for pad in node.attrs.get("pads", [0, 0, 0, 0])):
+        return False
+    weightShape = node.inputs[1].shape
+    if len(weightShape) != 4:
+        return False
+    # this runs both before and after the layout pass, which rewrites the weight
+    # from [Cout, Cin, 1, 1] to [Cout, 1, 1, Cin]
+    chIn = weightShape[1] if node.attrs.get("channels_first", True) else weightShape[3]
+    if not _hasUnsignedInput(node):
+        return False
+    # the kernel blocks two output channels and four input bytes at a time
+    # No condition on the consumer, unlike isPULPStemConv: only this node's output
+    # side moves, so a consumer that wants channels-last just gets one transpose
+    # back. That is the cheaper half of the trade -- restricting this to depthwise
+    # consumers sends MobileNetV1's last pointwise to pulp_nn_pointwise, whose row
+    # split degenerates on its 3x3 output, and costs 37k cycles to save 2k.
+    return weightShape[0] % 2 == 0 and chIn % 4 == 0
+
+
+def _PULP_NCHWtoNHWC_pw_fun(graph: gs.Graph, match: Match, name: str, default_channels_first: bool = True):
+    node = next(iter((match.nodes_map.values())))
+
+    if not isPULPPointwise(node):
+        return graph
+
+    channels_first = node.attrs.get("channels_first", True)
+    if (channels_first != default_channels_first):
+        tensorIn = node.inputs[0]
+        spatialDims = len(node.inputs[1].shape) - 2
+
+        permuteIn = _transformLayoutPermutation(len(tensorIn.shape), spatialDims, default_channels_first)
+        graph.nodes.append(_appendTranspose(tensorIn, node, permuteIn))
+
+        # the PULP pointwise kernel writes channels-first, so unlike the dense
+        # case the output needs no transpose back
+
+        # RequantizedConv: [weights, mul, add, opt. shift]
+        for tensor in node.inputs[1:]:
+            _transformLayoutConst(tensor, spatialDims, default_channels_first)
+
+        node.attrs["channels_first"] = default_channels_first
+
+    return graph
+
+
+@contextagnostic
+class PULPNCHWtoNHWCPwConvPass(ReplaceSequentialPatternPass):
+
+    def __init__(self, default_channels_first: bool = True):
+        graph = _singleNodePattern(op = "RequantizedConv")
+        name = "_PULP_NCHW_TO_NHWC_PW_CONV_PASS"
+        super().__init__(graph, partial(_PULP_NCHWtoNHWC_pw_fun, default_channels_first = default_channels_first), name)
+
+
 @contextagnostic
 class PULPNCHWtoNHWCDwConvPass(ReplaceSequentialPatternPass):
 
@@ -369,6 +480,62 @@ class NCHWtoNHWCPass(SequentialPass):
         super().__init__(*passes)
 
 
+def isPULPStemConv(node: gs.Node) -> bool:
+    """First-layer convolution that can stay channels-first on both sides.
+
+    Both ends have to want that layout: the input must be a graph input, which
+    arrives channels-first, and the consumer must be a depthwise convolution,
+    which reads channels-first. Feeding a dense convolution instead would only
+    move the transpose rather than remove it. The shape is the one
+    PULPStemConv3x3.c has a fast path for; anything else would land in its
+    reference loop, which is far slower than the im2col kernel it replaced.
+    """
+    if node.op != "RequantizedConv" or node.attrs.get("group", 1) != 1:
+        return False
+    if not _hasUnsignedOutput(node):
+        return False
+    if len(node.inputs) < 2 or not isinstance(node.inputs[1], gs.Constant):
+        return False
+    if len(node.inputs[0].inputs) != 0:
+        return False
+    # spelled out rather than tested for a property: an absent attribute means no
+    # padding and unit strides, which the fast path in PULPStemConv3x3.c is not
+    # written for -- its rows advance by two and carry only the window's bottom
+    # row over, which is the stride-2 overlap
+    if list(node.attrs.get("kernel_shape", [])) != [3, 3]:
+        return False
+    if list(node.attrs.get("pads", [])) != [1, 1, 1, 1]:
+        return False
+    if list(node.attrs.get("strides", [])) != [2, 2]:
+        return False
+    weightShape = node.inputs[1].shape
+    if len(weightShape) != 4:
+        return False
+    chIn = weightShape[1] if node.attrs.get("channels_first", True) else weightShape[3]
+    if chIn != 3:
+        return False
+    return _hasDepthwiseConsumer(node, weightShape[0])
+
+
+def _PULP_NCHWtoNHWC_conv_fun(graph: gs.Graph, match: Match, name: str, default_channels_first: bool = True):
+    node = next(iter((match.nodes_map.values())))
+
+    if isPULPStemConv(node):
+        return graph
+
+    return _NCHWtoNHWC_fun(graph, match, name, default_channels_first)
+
+
+@contextagnostic
+class PULPNCHWtoNHWCConvPass(ReplaceSequentialPatternPass):
+
+    def __init__(self, default_channels_first: bool = True):
+        graph = _singleNodePattern(op = "Conv|RequantizedConv")
+        name = "_PULP_NCHW_TO_NHWC_CONV_PASS"
+        super().__init__(graph, partial(_PULP_NCHWtoNHWC_conv_fun, default_channels_first = default_channels_first),
+                         name, NonBranchingMatcher(regex_op = True))
+
+
 @contextagnostic
 class PULPNCHWtoNHWCPass(SequentialPass):
 
@@ -377,7 +544,8 @@ class PULPNCHWtoNHWCPass(SequentialPass):
             NCHWtoNHWCPadPass(default_channels_first),
             NCHWtoNHWCMaxPoolPass(default_channels_first),
             PULPNCHWtoNHWCDwConvPass(default_channels_first),
-            NCHWtoNHWCConvPass(default_channels_first),
+            PULPNCHWtoNHWCPwConvPass(default_channels_first),
+            PULPNCHWtoNHWCConvPass(default_channels_first),
         ]
         super().__init__(*passes)
 
@@ -393,12 +561,18 @@ def _requantized_gemm_to_pw_fun(graph: gs.Graph, match: Match, name: str):
     if not isinstance(matrixB, gs.Constant):
         return graph
 
-    assert len(matrixA.shape) in [
-        2, 3
-    ], f"Unsupported number of dimensions for input matrix A of GEMM operation: {len(matrixA.shape)}; shape: {matrixA.shape}"
-    assert len(matrixY.shape) in [
-        2, 3
-    ], f"Unsupported number of dimensions for output matrix of GEMM operation: {len(matrixY.shape)}; shape: {matrixY.shape}"
+    assert len(matrixA.shape) in (2, 3), f"Unsupported GEMM's input matrix A with shape {matrixA.shape}"
+    assert len(matrixY.shape) in (2, 3), f"Unsupported GEMM's output matrix with shape {matrixY.shape}"
+
+    # The pointwise conv this node is about to be lowered into only supports
+    # per-tensor or per-output-channel requantization via its RQS unit. If
+    # mul/add don't fit that (e.g. per-row requantization, where M becomes a
+    # spatial dimension of the convolution rather than a channel), bail out
+    # here and leave the RequantizedGemm for another lowering pass to handle.
+    add, mul = node.inputs[2], node.inputs[3]
+    out_channels = matrixY.shape[-1]
+    if int(np.prod(mul.shape)) not in (1, out_channels) or int(np.prod(add.shape)) not in (1, out_channels):
+        return graph
 
     # Pointwise with HWC layout (channels_first == False)
 
@@ -408,13 +582,15 @@ def _requantized_gemm_to_pw_fun(graph: gs.Graph, match: Match, name: str):
     node.attrs['alpha'] = node.attrs.get('alpha', 1.0)
     node.attrs['beta'] = node.attrs.get('beta', 1.0)
 
-    # If transA is set then the matrix is of shape [B x K x M] and it needs to be transposed, otherwise its shape is  [B x M x K]
+    # If transA is set then the matrix is of shape [B x K x M] and it needs to
+    # be transposed, otherwise its shape is  [B x M x K]
     if node.attrs['transA'] == 1:
         perm = _swapLastTwoDimsPermutation(len(matrixA.shape))
         graph.nodes.append(_appendTranspose(matrixA, node, perm))
         matrixA = node.inputs[0]
 
-    # If transB is set then the matrix is of shape [N x K] and it doesn't need to be transposed, otherwise its shape is [K x N] and it has to be transposed
+    # If transB is set then the matrix is of shape [N x K] and it doesn't need
+    # to be transposed, otherwise its shape is [K x N] and it has to be transposed
     if node.attrs['transB'] == 0:
         perm = _swapLastTwoDimsPermutation(len(matrixB.shape))
         matrixB.values = matrixB.values.transpose(perm)
@@ -444,6 +620,7 @@ def _requantized_gemm_to_pw_fun(graph: gs.Graph, match: Match, name: str):
     matrixYSqueezeDimsNode, pwOut = _prependSqueezeDims(matrixY, name, squeezeDims)
     graph.nodes.append(matrixYSqueezeDimsNode)
 
+    n_levels = node.attrs['n_levels_out'] if 'n_levels_out' in node.attrs else node.attrs['n_levels']
     pwAttrs = {
         'channels_first': False,
         'dilations': [1, 1],
@@ -452,13 +629,10 @@ def _requantized_gemm_to_pw_fun(graph: gs.Graph, match: Match, name: str):
         'pads': [0, 0, 0, 0],
         'strides': [1, 1],
         'div': node.attrs['div'],
-        'n_levels_out': node.attrs['n_levels_out'],
+        'n_levels_out': n_levels,
         'shift': node.attrs['shift'],
         'signed': node.attrs['signed'],
     }
-
-    add = node.inputs[2]
-    mul = node.inputs[3]
 
     _inputs = [pwIn, pwWeight, mul, add]
 
