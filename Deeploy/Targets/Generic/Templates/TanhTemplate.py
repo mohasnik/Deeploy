@@ -14,9 +14,5 @@ from Deeploy.DeeployTypes import NetworkContext, NodeTemplate, OperatorRepresent
 
 referenceTemplate = NodeTemplate("""
 // Tan (Name: ${nodeName}, Op: ${nodeOp})
-BEGIN_SINGLE_CORE
-    for (uint32_t i=0;i<${size};i++){
-        ${data_out}[i] = tanh(${data_in}[i]);
-    }
-END_SINGLE_CORE
+    tanh_fp32(${data_in}, ${size}, ${data_out});
 """)

@@ -3203,11 +3203,11 @@ class ReduceMaxParser(NodeParser):
 
         if ret:
             axes = node.attrs.get('axes', 0)
-            if len(axes) > 1:
+            if len(axes) != 1:
                 return False
-            else:
-                self.operatorRepresentation['axes'] = axes[0]
-                return True
+
+            self.operatorRepresentation['axes'] = int(axes[0])
+            return True
 
         return False
 
@@ -3222,6 +3222,12 @@ class ReduceMaxParser(NodeParser):
         self.operatorRepresentation['data_out'] = data_out.name
 
         axes = self.operatorRepresentation['axes']
+        if axes < 0:
+            axes += len(data_in.shape)
+        if not 0 <= axes < len(data_in.shape):
+            return ctxt, False
+
+        self.operatorRepresentation['axes'] = axes
 
         inner_size = int(np.prod(data_in.shape[axes+1:]))
         outer_size = int(np.prod(data_in.shape[:axes]))

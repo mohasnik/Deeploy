@@ -1203,16 +1203,17 @@ def _unroll_concat_layer_fun(graph: gs.Graph, match: Match, name: str):
         shapeAxis = axis if axis >= 0 else axis + len(firstInputShape)
         firstInputShape[shapeAxis] += concat_node.inputs[1].shape[shapeAxis]
 
-    intermediate = gs.Variable(name + '_out_0', dtype = concat_node.outputs[0].dtype, shape = firstInputShape)
+    base_name = concat_node.name or concat_node.outputs[0].name or name
+    intermediate = gs.Variable(base_name + '_out_0', dtype = concat_node.outputs[0].dtype, shape = firstInputShape)
     originalOutputs = list(concat_node.outputs)
 
     firstConcat = gs.Node(op = 'Concat',
-                          name = name + '_0',
+                          name = base_name + '_0',
                           attrs = copy.copy(concat_node.attrs),
                           inputs = list(concat_node.inputs[:2]),
                           outputs = [intermediate])
     secondConcat = gs.Node(op = 'Concat',
-                           name = name + '_1',
+                           name = base_name + '_1',
                            attrs = copy.copy(concat_node.attrs),
                            inputs = [intermediate, concat_node.inputs[2]],
                            outputs = originalOutputs)

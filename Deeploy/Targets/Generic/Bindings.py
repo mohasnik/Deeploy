@@ -303,7 +303,7 @@ BasicConcatBindings = [
     NodeBinding(ConcatChecker([PointerClass(type), PointerClass(type)], [PointerClass(type)]),
                 ConcatTemplate.referenceTemplate, BasicTransformer) for type in IntegerDataTypes
 ] + [
-    NodeBinding(ConcatChecker([PointerClass(float32_t), PointerClass(float32_t)], [PointerClass(float32_t)]),
+    NodeBinding(FloatConcatChecker([PointerClass(float32_t), PointerClass(float32_t)], [PointerClass(float32_t)]),
                 ConcatTemplate.referenceTemplate, BasicTransformer)
 ]
 
@@ -429,24 +429,16 @@ BasicGlobalMaxPoolBindings = [
 
 ### NEWLY ADDED LAYERS:
 BasicTanhBindings = [
-    NodeBinding(TanhChecker([PointerClass(float32_t), PointerClass(float32_t)], [PointerClass(float32_t)]),
+    NodeBinding(TanhChecker([PointerClass(float32_t)], [PointerClass(float32_t)]),
                 TanhTemplate.referenceTemplate, BasicTransformer)
 ]
 
 
 BasicReduceMaxBindings = [
-    NodeBinding(ReduceMaxChecker([PointerClass(type1), PointerClass(type2)], [PointerClass(int32_t)]),
+    NodeBinding(ReduceMaxChecker([PointerClass(type)], [PointerClass(int32_t)]),
                 ReduceMaxTemplate.referenceTemplate, BasicTransformer)
-    for type1 in IntegerDataTypes
-    for type2 in IntegerDataTypes
+    for type in IntegerDataTypes
 ] + [
-    NodeBinding(ReduceMaxChecker([PointerClass(float32_t), PointerClass(float32_t)], [PointerClass(float32_t)]),
+    NodeBinding(ReduceMaxChecker([PointerClass(float32_t)], [PointerClass(float32_t)]),
                 ReduceMaxTemplate.referenceTemplate, BasicTransformer)
 ]
-
-BasicConcatBindings += [NodeBinding(
-    FloatConcatChecker([PointerClass(float32_t), PointerClass(float32_t)],
-                       [PointerClass(float32_t)]),
-    ConcatTemplate.referenceTemplate,
-    BasicTransformer
-)]
