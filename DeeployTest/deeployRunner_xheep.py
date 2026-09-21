@@ -17,7 +17,6 @@ def setup_xheep_defaults(parser):
         toolchain_install_dir="/app/install/riscv",
         skipsim=False,  
         cmake=[
-            "-DXHEEP_HOME=/app/x-heep",
             "-DXHEEP_TARGET=sim",
             # "-DXHEEP_LINKER=flash_load",
             "-DXHEEP_LINKER=on_chip",
