@@ -9,42 +9,35 @@
 
 # from Deeploy.DeeployTypes import NodeMapper, ONNXLayer, OperatorRepresentation, Shape
 
-
 # class SingleOperationPerElementLayer(ONNXLayer):
 
 #     def computeOps(self):
 #         return self.mapper.parser.operatorRepresentation['size']
-
 
 # class ConcatLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class iRMSNormLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class SliceLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class ReshapeLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class GatherLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class GELULayer(ONNXLayer):
 
@@ -63,7 +56,6 @@
 
 #         return mul1 + neg + exp + add + div + mul2
 
-
 # class GELUGradLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
@@ -75,12 +67,10 @@
 #         gelu_grad_ops = size * ops_per_element
 #         return gelu_grad_ops
 
-
 # class iHardswishLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class iNoNormLayer(ONNXLayer):
 
@@ -98,18 +88,15 @@
 #         inputShapes[2] = inputShapes[1]
 #         return (inputShapes, outputShapes)
 
-
 # class RQSiGELULayer(GELULayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class RQSiHardswishLayer(iHardswishLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class SoftmaxLayer(ONNXLayer):
 
@@ -131,7 +118,6 @@
 
 #         return total_ops
 
-
 # class SoftmaxGradLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
@@ -149,12 +135,10 @@
 
 #         return mul_ops + sum_ops + broadcast_mul_ops + sub_ops + final_mul_ops
 
-
 # class ITAMaxLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class RequantShiftLayer(ONNXLayer):
 
@@ -173,7 +157,6 @@
 #     def computeOps(self):
 #         return self.mapper.parser.operatorRepresentation['size'] * 3  # One add, one mul, one div
 
-
 # class AddLayer(SingleOperationPerElementLayer):
 
 #     def computeShapes(self, inputShapes: Shape, outputShapes: Shape, operatorRepresentation,
@@ -187,9 +170,7 @@
 #         outputShapes = [inputShapes[0]]
 #         return (inputShapes, outputShapes)
 
-
 # SubLayer = AddLayer
-
 
 # class MatMulLayer(ONNXLayer):
 
@@ -221,7 +202,6 @@
 
 #         return [A_shape, B_shape], outputShapes
 
-
 # class RQMatMulLayer(MatMulLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
@@ -241,30 +221,25 @@
 #         rqs = self.mapper.parser.operatorRepresentation['size'] * 3
 #         return matmul + rqs
 
-
 # class PowLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class SqrtLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class DivLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class RQIntegerDivLayer(DivLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class GEMMLayer(ONNXLayer):
 
@@ -295,7 +270,6 @@
 #             'O'] * self.mapper.parser.operatorRepresentation['batch']
 
 #         return gemm
-
 
 # class RQGEMMLayer(GEMMLayer):
 
@@ -331,7 +305,6 @@
 #         rqs = self.mapper.parser.operatorRepresentation['size'] * 3
 #         return gemm + rqs
 
-
 # class MulLayer(SingleOperationPerElementLayer):
 
 #     def computeShapes(self, inputShapes: Shape, outputShapes: Shape, operatorRepresentation,
@@ -345,7 +318,6 @@
 #         else:
 #             inputShapes[0] = inputShapes[1]
 #         return (inputShapes, outputShapes)
-
 
 # class ConvLayer(ONNXLayer):
 
@@ -374,7 +346,6 @@
 #             numPx = self.mapper.parser.operatorRepresentation['dim_im_out_x']
 #         return numPx * opsPerPx
 
-
 # class RQSConvLayer(ConvLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
@@ -391,12 +362,10 @@
 
 #         return conv + rqs
 
-
 # class PadLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class MaxPoolLayer(ONNXLayer):
 
@@ -411,12 +380,10 @@
 #         total_ops = data_out_size * comparisons_per_window
 #         return total_ops
 
-
 # class ReduceMeanLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class ReduceSumLayer(ONNXLayer):
 
@@ -434,10 +401,8 @@
 #             outputShapes[0] = outputShapes[0][:axis] + outputShapes[0][axis + 1:]
 #         return (inputShapes, outputShapes)
 
-
 # class ReluLayer(SingleOperationPerElementLayer):
 #     pass
-
 
 # class LayerNormLayer(ONNXLayer):
 
@@ -453,36 +418,30 @@
 #         compDiv = self.mapper.parser.operatorRepresentation['size']
 #         return compAverage + compNormalize + compSqr + compSum + compSqrt + compDiv
 
-
 # class LayerNormGradLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class TransposeLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class SoftmaxCrossEntropyLossLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class SoftmaxCrossEntropyLossGradLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class SGDLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class LinearAttentionLayer(ONNXLayer):
 
@@ -519,7 +478,6 @@
 #         # return totOps
 
 #         return 0
-
 
 # class CLCALayer(ONNXLayer):
 
@@ -591,7 +549,6 @@
 
 #         return QOps + VOps + KOps + EOps + MMKTV + MMQA + MMQE + DivOps + OOps
 
-
 # class MHSALayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
@@ -623,24 +580,20 @@
 #         totOps = QOps + KOps + VOps + QKOps + AVOps + OutOps
 #         return totOps
 
-
 # class DebugPrintLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class QuantLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
 
-
 # class DequantLayer(ONNXLayer):
 
 #     def __init__(self, maps: List[NodeMapper]):
 #         super().__init__(maps)
-
 
 # class BatchNormalizationLayer(ONNXLayer):
 
@@ -653,7 +606,6 @@
 #         C = self.mapper.parser.operatorRepresentation['channel_size']
 #         W = self.mapper.parser.operatorRepresentation['window_size']
 #         return B * C * W * 5
-
 
 # class ConvTransposeLayer(ONNXLayer):
 
@@ -702,14 +654,11 @@
 
 #         return numPx * opsPerPx
 
-
 # class CeilLayer(SingleOperationPerElementLayer):
 #     pass
 
-
 # class FloorLayer(SingleOperationPerElementLayer):
 #     pass
-
 
 # class ClipLayer(ONNXLayer):
 
@@ -717,10 +666,8 @@
 #         # compare vs min and max
 #         return self.mapper.parser.operatorRepresentation['size'] * 2
 
-
 # class ExpLayer(SingleOperationPerElementLayer):
 #     pass
-
 
 # class SigmoidLayer(ONNXLayer):
 
@@ -728,13 +675,11 @@
 #         # sigmoid(x) = 1 / (1 + exp(-x)): neg, exp, add, div
 #         return self.mapper.parser.operatorRepresentation['size'] * 4
 
-
 # class SwishLayer(ONNXLayer):
 
 #     def computeOps(self):
 #         # x * sigmoid(x): 4 ops for sigmoid + 1 mul
 #         return self.mapper.parser.operatorRepresentation['size'] * 5
-
 
 # class HardSigmoidLayer(ONNXLayer):
 
@@ -742,13 +687,11 @@
 #         # max(0, min(1, alpha*x + beta)): mul, add, clip(min), clip(max)
 #         return self.mapper.parser.operatorRepresentation['size'] * 4
 
-
 # class HardSwishLayer(ONNXLayer):
 
 #     def computeOps(self):
 #         # x * HardSigmoid(x): 4 ops for hard sigmoid + 1 mul
 #         return self.mapper.parser.operatorRepresentation['size'] * 5
-
 
 # class InstanceNormLayer(ONNXLayer):
 
@@ -759,7 +702,6 @@
 #         B, C, S = int(opRep['batch_size']), int(opRep['num_channels']), int(opRep['spatial'])
 #         return B * C * (S * 8 + 3)
 
-
 # class GroupNormLayer(ONNXLayer):
 
 #     def computeOps(self):
@@ -767,7 +709,6 @@
 #         opRep = self.mapper.parser.operatorRepresentation
 #         B, C, S = int(opRep['batch_size']), int(opRep['num_channels']), int(opRep['spatial'])
 #         return B * C * (S * 8 + 3)
-
 
 # class AveragePoolLayer(ONNXLayer):
 
@@ -777,14 +718,12 @@
 #         # (kernel_elements - 1) additions + 1 division per output element
 #         return opRep['data_out_size'] * kernel_elements
 
-
 # class GlobalAveragePoolLayer(ONNXLayer):
 
 #     def computeOps(self):
 #         opRep = self.mapper.parser.operatorRepresentation
 #         # (spatial_size - 1) additions + 1 division per output channel
 #         return int(opRep['batch_size'] * opRep['num_channels'] * opRep['spatial_size'])
-
 
 # class GlobalMaxPoolLayer(ONNXLayer):
 

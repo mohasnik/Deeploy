@@ -9,8 +9,7 @@
 
 from Deeploy.CommonExtensions.OptimizationPasses.TopologyOptimizationPasses.LoweringOptimizationPasses import \
     RemoveEmptyConvBiasPass, RemoveOnlySingletonReduceMeanPass
-from Deeploy.DeeployTypes import ConstantBuffer, DeploymentEngine, DeploymentPlatform, NodeMapper, NodeTemplate, \
-    StructBuffer, TopologyOptimizer, TransientBuffer, VariableBuffer
+from Deeploy.DeeployTypes import DeploymentEngine, DeploymentPlatform, NodeMapper, TopologyOptimizer
 from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicAveragePool1DBindings, BasicAveragePool2DBindings, \
     BasicBatchNormBindings, BasicCeilBindings, BasicClipBindings, BasicConcatBindings, BasicConv1DBindings, \
     BasicConv2DBindings, BasicConvTransposeBindings, BasicDebugPrintBindings, BasicDequantBindings, BasicDivBindings, \
@@ -19,35 +18,31 @@ from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicAveragePool1
     BasicGroupNormBindings, BasicHardSigmoidBindings, BasicHardSwishBindings, BasicInstanceNormBindings, \
     BasicITAPartialSoftmaxBinding, BasicITASoftmaxBinding, BasicLayerNormBindings, BasicMatMulBindings, \
     BasicMaxPool1DBindings, BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, BasicPad2DBindings, \
-    BasicPowBindings, BasicQuantBindings, BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, \
-    BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, BasicSigmoidBindings, \
-    BasicSliceBindings, BasicSoftmaxBindings, BasicSqrtBindings, BasicSubBindings, BasicSwishBindings, \
-    BasicTransposeBindings, DummyBinding, \
-    BasicTanhBindings, BasicReduceMaxBindings
+    BasicPowBindings, BasicQuantBindings, BasicReduceMaxBindings, BasicReduceMeanBindings, BasicReduceSumBindings, \
+    BasicReluBinding, BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, \
+    BasicSigmoidBindings, BasicSliceBindings, BasicSoftmaxBindings, BasicSqrtBindings, BasicSubBindings, \
+    BasicSwishBindings, BasicTanhBindings, BasicTransposeBindings, DummyBinding
 from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, BatchNormalizationLayer, CeilLayer, ClipLayer, \
     ConcatLayer, ConvLayer, ConvTransposeLayer, DebugPrintLayer, DequantLayer, DivLayer, ExpLayer, FloorLayer, \
     GatherLayer, GELULayer, GEMMLayer, GlobalAveragePoolLayer, GlobalMaxPoolLayer, GroupNormLayer, InstanceNormLayer, \
-    ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, PowLayer, QuantLayer, ReduceMeanLayer, \
-    ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, SigmoidLayer, \
-    SliceLayer, SoftmaxLayer, SqrtLayer, SubLayer, SwishLayer, TransposeLayer, \
-    TanhLayer, ReduceMaxLayer
+    ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, PowLayer, QuantLayer, ReduceMaxLayer, \
+    ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, \
+    SigmoidLayer, SliceLayer, SoftmaxLayer, SqrtLayer, SubLayer, SwishLayer, TanhLayer, TransposeLayer
 from Deeploy.Targets.Generic.Parsers import AddParser, AveragePool1DParser, AveragePool2DParser, BatchNormParser, \
     CeilParser, ClipParser, ConcatParser, ConvTranspose1DParser, DebugParser, DequantParser, DivParser, DummyParser, \
     ExpParser, FlattenParser, FloorParser, GatherParser, GELUParser, GenericConv1DParser, GenericConv2DParser, \
     GenericDWConv1DParser, GenericDWConv2DParser, GenericGEMMParser, GenericMaxPool2DParser, GlobalAveragePoolParser, \
     GlobalMaxPoolParser, GroupNormParser, HardSigmoidParser, HardSwishParser, InstanceNormParser, IntegerDivParser, \
     ITAMaxParser, ITAPartialMaxParser, LayerNormParser, MatMulParser, MaxPool1DParser, MulParser, Pad1DParser, \
-    Pad2DParser, PowParser, QuantParser, ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, \
-    ReshapeParser, RQIntegerDivParser, RQSiGELUParser, SigmoidParser, SliceParser, SoftmaxParser, SqrtParser, \
-    SubParser, SwishParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser, \
-    TanhParser, ReduceMaxParser
-from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate
-
-from Deeploy.Targets.Generic.Platform import GenericVariableBuffer, GenericConstantBuffer, GenericTransientBuffer, GenericStructBuffer
-
+    Pad2DParser, PowParser, QuantParser, ReduceMaxParser, ReduceMeanParser, ReduceSumParser, ReluParser, \
+    RequantShiftParser, ReshapeParser, RQIntegerDivParser, RQSiGELUParser, SigmoidParser, SliceParser, SoftmaxParser, \
+    SqrtParser, SubParser, SwishParser, TanhParser, TransposeParser, UnsqueezeParser, iLayerNormParser, \
+    iSoftmaxParser
+from Deeploy.Targets.Generic.Platform import GenericConstantBuffer, GenericStructBuffer, GenericTransientBuffer, \
+    GenericVariableBuffer
 from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, ExtractPaddingFromConvPass, \
-    ExtractPaddingFromPoolPass, MatMulAddMergePass, MergeConstAddAndRequantPass, QuantPatternPass, \
-    iGELURequantMergePass, UnrollConcatPass
+    ExtractPaddingFromPoolPass, MatMulAddMergePass, MergeConstAddAndRequantPass, QuantPatternPass, UnrollConcatPass, \
+    iGELURequantMergePass
 
 AddMapper = NodeMapper(AddParser(), BasicAddBindings)
 SubMapper = NodeMapper(SubParser(), BasicSubBindings)
@@ -114,7 +109,6 @@ DummyMapper = NodeMapper(DummyParser(), [DummyBinding])
 TanhMapper = NodeMapper(TanhParser(), BasicTanhBindings)
 ReduceMaxMapper = NodeMapper(ReduceMaxParser(), BasicReduceMaxBindings)
 
-
 XheepMapping = {
     'Add': AddLayer([AddMapper]),
     'Sub': SubLayer([SubMapper]),
@@ -176,27 +170,31 @@ XheepMapping = {
     # 'GlobalAveragePool': ConvLayer([DummyMapper]),
 
     ### NEWLY ADDED LAYERS:
-    'Tanh' : TanhLayer([TanhMapper]),
-    'ReduceMax' : ReduceMaxLayer([ReduceMaxMapper])
+    'Tanh': TanhLayer([TanhMapper]),
+    'ReduceMax': ReduceMaxLayer([ReduceMaxMapper])
 }
 
 
 class XHeepVariableBuffer(GenericVariableBuffer):
-    def __init__(self, name = '', shape=..., aliases = None):
+
+    def __init__(self, name = '', shape = ..., aliases = None):
         super().__init__(name, shape, aliases)
 
 
 class XHeepTransientBuffer(GenericTransientBuffer):
-    def __init__(self, name = '', size=0):
+
+    def __init__(self, name = '', size = 0):
         super().__init__(name, size)
 
+
 class XHeepConstantBuffer(GenericConstantBuffer):
-    def __init__(self, name = '', shape=..., values=...):
+
+    def __init__(self, name = '', shape = ..., values = ...):
         super().__init__(name, shape, values)
 
 
-
 class XHeepStructBuffer(GenericStructBuffer):
+
     def __init__(self, name, structDict):
         super().__init__(name, structDict)
 
@@ -217,12 +215,12 @@ XHeepOptimizer = TopologyOptimizer(
     ],
     name = "XHeepOptimizer")
 
-
 ## TODO: move to crt code
 includeList = ["DeeployBasicMath.h", "csr.h"]
 initCode = """
   CSR_SET_BITS(CSR_REG_MSTATUS, (0x1 << 13));       // ENABLES FP INSTRUCTIONS
 """
+
 
 class XHeepEngine(DeploymentEngine):
 
