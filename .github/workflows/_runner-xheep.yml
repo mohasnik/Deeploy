@@ -52,7 +52,6 @@ jobs:
       - name: Build Deeploy
         shell: bash
         run: |
-          cd /app/Deeploy
           pip install -e . || true
       - name: Cache ccache
         uses: actions/cache/restore@v4
