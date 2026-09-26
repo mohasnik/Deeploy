@@ -35,8 +35,7 @@ add_compile_options(
   -mno-relax
   -O3
   -MP
-  --sysroot=${TOOLCHAIN_INSTALL_DIR}/picolibc/riscv/rv32imc
-  -isystem ${TOOLCHAIN_INSTALL_DIR}/picolibc/riscv/${ISA}/include
+  --sysroot=${TOOLCHAIN_INSTALL_DIR}/riscv32-unknown-elf
   -fno-builtin-memcpy
   -fno-builtin-memset
 )
@@ -48,8 +47,9 @@ add_link_options(
   -nostartfiles
   -march=${ISA}
   -mabi=${ABI}
-  -L${TOOLCHAIN_INSTALL_DIR}/picolibc/riscv/rv32imc/lib
-  -L${TOOLCHAIN_INSTALL_DIR}/lib/clang/15.0.0/lib/baremetal/rv32imc/
+  --sysroot=${TOOLCHAIN_INSTALL_DIR}/riscv32-unknown-elf
+  -L${TOOLCHAIN_INSTALL_DIR}/riscv32-unknown-elf/lib
+  -L${TOOLCHAIN_INSTALL_DIR}/lib/clang/19/include
   -z norelro
   -fno-builtin-memcpy
   -fno-builtin-memset
