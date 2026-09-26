@@ -29,7 +29,7 @@ from Deeploy.Targets.Snitch.Deployer import SnitchDeployer
 from Deeploy.Targets.Snitch.Platform import SnitchOptimizer, SnitchPlatform
 from Deeploy.Targets.SoftHier.Deployer import SoftHierDeployer
 from Deeploy.Targets.SoftHier.Platform import SoftHierOptimizer, SoftHierPlatform
-from Deeploy.Targets.xheep.Platform import XHeepOptimizer, XHeepPlatform
+from Deeploy.Targets.xheep.Platform import XHeepPlatform
 
 _SIGNPROP_PLATFORMS = ["Apollo3", "Apollo4", "QEMU-ARM", "Generic", "MemPool", "SoftHier", "Xheep"]
 _NONSIGNPROP_PLATFORMS = ["Siracusa", "Siracusa_w_neureka", "PULPOpen", "Snitch", "Chimera", "GAP9", "XDNA2"]

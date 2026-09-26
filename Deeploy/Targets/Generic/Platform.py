@@ -14,32 +14,30 @@ from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicAveragePool1
     BasicGroupNormBindings, BasicHardSigmoidBindings, BasicHardSwishBindings, BasicInstanceNormBindings, \
     BasicITAPartialSoftmaxBinding, BasicITASoftmaxBinding, BasicLayerNormBindings, BasicMatMulBindings, \
     BasicMaxPool1DBindings, BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, BasicPad2DBindings, \
-    BasicPowBindings, BasicQuantBindings, BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, \
-    BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, BasicSigmoidBindings, \
-    BasicSliceBindings, BasicSoftmaxBindings, BasicSqrtBindings, BasicSubBindings, BasicSwishBindings, \
-    BasicTransposeBindings, DummyBinding, \
-    BasicTanhBindings, BasicReduceMaxBindings
+    BasicPowBindings, BasicQuantBindings, BasicReduceMaxBindings, BasicReduceMeanBindings, BasicReduceSumBindings, \
+    BasicReluBinding, BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, \
+    BasicSigmoidBindings, BasicSliceBindings, BasicSoftmaxBindings, BasicSqrtBindings, BasicSubBindings, \
+    BasicSwishBindings, BasicTanhBindings, BasicTransposeBindings, DummyBinding
 from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, BatchNormalizationLayer, CeilLayer, ClipLayer, \
     ConcatLayer, ConvLayer, ConvTransposeLayer, DebugPrintLayer, DequantLayer, DivLayer, ExpLayer, FloorLayer, \
     GatherLayer, GELULayer, GEMMLayer, GlobalAveragePoolLayer, GlobalMaxPoolLayer, GroupNormLayer, InstanceNormLayer, \
-    ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, PowLayer, QuantLayer, ReduceMeanLayer, \
-    ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, SigmoidLayer, \
-    SliceLayer, SoftmaxLayer, SqrtLayer, SubLayer, SwishLayer, TransposeLayer, \
-    TanhLayer, ReduceMaxLayer
+    ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, PowLayer, QuantLayer, ReduceMaxLayer, \
+    ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, \
+    SigmoidLayer, SliceLayer, SoftmaxLayer, SqrtLayer, SubLayer, SwishLayer, TanhLayer, TransposeLayer
 from Deeploy.Targets.Generic.Parsers import AddParser, AveragePool1DParser, AveragePool2DParser, BatchNormParser, \
     CeilParser, ClipParser, ConcatParser, ConvTranspose1DParser, DebugParser, DequantParser, DivParser, DummyParser, \
     ExpParser, FlattenParser, FloorParser, GatherParser, GELUParser, GenericConv1DParser, GenericConv2DParser, \
     GenericDWConv1DParser, GenericDWConv2DParser, GenericGEMMParser, GenericMaxPool2DParser, GlobalAveragePoolParser, \
     GlobalMaxPoolParser, GroupNormParser, HardSigmoidParser, HardSwishParser, InstanceNormParser, IntegerDivParser, \
     ITAMaxParser, ITAPartialMaxParser, LayerNormParser, MatMulParser, MaxPool1DParser, MulParser, Pad1DParser, \
-    Pad2DParser, PowParser, QuantParser, ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, \
-    ReshapeParser, RQIntegerDivParser, RQSiGELUParser, SigmoidParser, SliceParser, SoftmaxParser, SqrtParser, \
-    SubParser, SwishParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser, \
-    TanhParser, ReduceMaxParser
+    Pad2DParser, PowParser, QuantParser, ReduceMaxParser, ReduceMeanParser, ReduceSumParser, ReluParser, \
+    RequantShiftParser, ReshapeParser, RQIntegerDivParser, RQSiGELUParser, SigmoidParser, SliceParser, SoftmaxParser, \
+    SqrtParser, SubParser, SwishParser, TanhParser, TransposeParser, UnsqueezeParser, iLayerNormParser, \
+    iSoftmaxParser
 from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, ExtractPaddingFromConvPass, \
-    ExtractPaddingFromPoolPass, MatMulAddMergePass, MergeConstAddAndRequantPass, QuantPatternPass, \
-    iGELURequantMergePass, UnrollConcatPass
+    ExtractPaddingFromPoolPass, MatMulAddMergePass, MergeConstAddAndRequantPass, QuantPatternPass, UnrollConcatPass, \
+    iGELURequantMergePass
 
 AddMapper = NodeMapper(AddParser(), BasicAddBindings)
 SubMapper = NodeMapper(SubParser(), BasicSubBindings)
@@ -106,7 +104,6 @@ DummyMapper = NodeMapper(DummyParser(), [DummyBinding])
 TanhMapper = NodeMapper(TanhParser(), BasicTanhBindings)
 ReduceMaxMapper = NodeMapper(ReduceMaxParser(), BasicReduceMaxBindings)
 
-
 GenericMapping = {
     'Add': AddLayer([AddMapper]),
     'Sub': SubLayer([SubMapper]),
@@ -168,8 +165,8 @@ GenericMapping = {
     # 'GlobalAveragePool': ConvLayer([DummyMapper]),
 
     ### NEWLY ADDED LAYERS:
-    'Tanh' : TanhLayer([TanhMapper]),
-    'ReduceMax' : ReduceMaxLayer([ReduceMaxMapper])
+    'Tanh': TanhLayer([TanhMapper]),
+    'ReduceMax': ReduceMaxLayer([ReduceMaxMapper])
 }
 
 

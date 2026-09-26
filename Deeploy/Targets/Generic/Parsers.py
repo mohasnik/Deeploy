@@ -3163,6 +3163,7 @@ class GlobalMaxPoolParser(GlobalPoolParser):
 
 ### NEWLY ADDED LAYERS :
 
+
 class TanhParser(NodeParser):
 
     def __init__(self):
@@ -3188,12 +3189,12 @@ class TanhParser(NodeParser):
         return ctxt, True
 
 
-
 class ReduceMaxParser(NodeParser):
     """
         Reduce Max Parser.
         Only supports maximizing through one dimension. (axes.shape == 1)
     """
+
     def __init__(self):
         super().__init__()
 
@@ -3229,7 +3230,7 @@ class ReduceMaxParser(NodeParser):
 
         self.operatorRepresentation['axes'] = axes
 
-        inner_size = int(np.prod(data_in.shape[axes+1:]))
+        inner_size = int(np.prod(data_in.shape[axes + 1:]))
         outer_size = int(np.prod(data_in.shape[:axes]))
 
         self.operatorRepresentation['inner_size'] = inner_size

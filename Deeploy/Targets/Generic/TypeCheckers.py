@@ -633,6 +633,7 @@ class RMSNormChecker(SignPropTypeChecker):
 
 ### NEWLY ADDED LAYERS:
 
+
 class ReduceMaxChecker(SignPropTypeChecker):
 
     def __init__(self, input_types: Sequence[Type[Pointer]], output_types: Sequence[Type[Pointer]]):
@@ -645,6 +646,7 @@ class ReduceMaxChecker(SignPropTypeChecker):
     def _inferSignedness(self, inputs: List[VariableBuffer],
                          operatorRepresentation: OperatorRepresentation) -> List[bool]:
         return [inputs[0]._signed]
+
 
 class TanhChecker(SignPropTypeChecker):
 
@@ -660,8 +662,8 @@ class TanhChecker(SignPropTypeChecker):
         return [True]
 
 
-
 class FloatConcatChecker(SignPropTypeChecker):
+
     def _inferNumLevels(self, inputs, operatorRepresentation):
         return None
 
