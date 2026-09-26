@@ -33,7 +33,8 @@ jobs:
       - name: Checkout X-HEEP
         uses: actions/checkout@v4
         with:
-          repository: x-heep/x-heep
+          repository: mohasnik/x-heep
+          ref: Deeploy-support
           path: x-heep
           submodules: recursive
       - name: Link X-HEEP
@@ -46,11 +47,12 @@ jobs:
         run: |
           cd /app/x-heep
           make venv
-          make mcu-gen EXTERNAL_MCU_GEN_TEMPLATES="$GITHUB_WORKSPACE/cmake/xheep/xheep_config.cmake.tpl"
+          make mcu-gen X_HEEP_CFG=configs/deeploy.py
           make verilator-build
       - name: Build Deeploy
         shell: bash
         run: |
+          cd /app/Deeploy
           pip install -e . || true
       - name: Cache ccache
         uses: actions/cache/restore@v4

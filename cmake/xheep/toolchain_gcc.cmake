@@ -21,13 +21,7 @@ set(CMAKE_OBJDUMP ${TOOLCHAIN_PREFIX}-objdump)
 set(CMAKE_AR ${TOOLCHAIN_PREFIX}-ar)
 set(SIZE ${TOOLCHAIN_PREFIX}-size)
 
-set(XHEEP_CONFIG_CMAKE "${CMAKE_CURRENT_LIST_DIR}/xheep_config.cmake")
-if(NOT EXISTS "${XHEEP_CONFIG_CMAKE}")
-  message(FATAL_ERROR
-    "Missing ${XHEEP_CONFIG_CMAKE}. Run X-HEEP mcu-gen with "
-    "EXTERNAL_MCU_GEN_TEMPLATES=<deeploy>/cmake/xheep/xheep_config.cmake.tpl")
-endif()
-include("${XHEEP_CONFIG_CMAKE}")
+set(ISA rv32imc_zicsr CACHE STRING "X-HEEP RISC-V ISA")
 
 set(ABI ilp32 CACHE STRING "X-HEEP RISC-V ABI")
 set(CMAKE_SYSTEM_PROCESSOR ${ISA} CACHE STRING "X-HEEP RISC-V ISA")

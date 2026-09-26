@@ -14,13 +14,8 @@ set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}/clang)
 set(CMAKE_OBJCOPY ${TOOLCHAIN_PREFIX}/riscv32-unknown-elf-objcopy)
 set(CMAKE_OBJDUMP ${TOOLCHAIN_PREFIX}/${LLVM_TAG}-objdump)
 
-set(XHEEP_CONFIG_CMAKE "${CMAKE_CURRENT_LIST_DIR}/xheep_config.cmake")
-if(NOT EXISTS "${XHEEP_CONFIG_CMAKE}")
-  message(FATAL_ERROR
-    "Missing ${XHEEP_CONFIG_CMAKE}. Run X-HEEP mcu-gen with "
-    "EXTERNAL_MCU_GEN_TEMPLATES=<deeploy>/cmake/xheep/xheep_config.cmake.tpl")
-endif()
-include("${XHEEP_CONFIG_CMAKE}")
+set(ISA rv32imc CACHE STRING "X-HEEP RISC-V ISA")
+
 
 set(ABI ilp32 CACHE STRING "X-HEEP RISC-V ABI")
 
@@ -40,7 +35,8 @@ add_compile_options(
   -mno-relax
   -O3
   -MP
-  --sysroot=${TOOLCHAIN_INSTALL_DIR}/riscv32-unknown-elf
+  --sysroot=${TOOLCHAIN_INSTALL_DIR}/picolibc/riscv/rv32imc
+  -isystem ${TOOLCHAIN_INSTALL_DIR}/picolibc/riscv/${ISA}/include
   -fno-builtin-memcpy
   -fno-builtin-memset
 )
@@ -52,8 +48,8 @@ add_link_options(
   -nostartfiles
   -march=${ISA}
   -mabi=${ABI}
-  --sysroot=${TOOLCHAIN_INSTALL_DIR}/riscv32-unknown-elf
-  -L${TOOLCHAIN_INSTALL_DIR}/riscv32-unknown-elf/lib
+  -L${TOOLCHAIN_INSTALL_DIR}/picolibc/riscv/rv32imc/lib
+  -L${TOOLCHAIN_INSTALL_DIR}/lib/clang/15.0.0/lib/baremetal/rv32imc/
   -z norelro
   -fno-builtin-memcpy
   -fno-builtin-memset

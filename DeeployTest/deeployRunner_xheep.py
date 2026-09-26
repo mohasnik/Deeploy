@@ -13,7 +13,7 @@ def setup_xheep_defaults(parser):
     Setting up default values for X-HEEP platform
     """
     parser.set_defaults(
-        toolchain="GCC",
+        # toolchain="GCC",
         toolchain_install_dir="/app/install/riscv",
         skipsim=False,
         cmake=[
