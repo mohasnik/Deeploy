@@ -16,6 +16,7 @@
 /******************************************************************************/
 /*                                Tanh                                        */
 /******************************************************************************/
-void tanh_fp32(float32_t const *__restrict__ pSrcA, uint32_t size, float32_t *__restrict__ pDstC);
+void tanh_fp32(float32_t const *__restrict__ pSrcA, uint32_t size,
+               float32_t *__restrict__ pDstC);
 
 #endif //__DEEPLOY_BASIC_MATH_TANH_KERNEL_HEADER_

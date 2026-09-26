@@ -80,7 +80,7 @@ def mapPlatform(platformName: str) -> Tuple[DeploymentPlatform, bool]:
     elif platformName == "XDNA2":
         from Deeploy.Targets.XDNA2.Platform import XDNA2Platform
         Platform = XDNA2Platform()
-    
+
     elif platformName == "Xheep":
         Platform = XHeepPlatform()
 
@@ -280,9 +280,9 @@ def mapDeployer(platform: DeploymentPlatform,
                                    name = name,
                                    default_channels_first = default_channels_first,
                                    deeployStateDir = deeployStateDir)
-    
+
     # TODO: add a branch for X-HEEP if needed
-    
+
     else:
         # Lazy-import XDNA2 to avoid requiring mlir-aie on non-XDNA2 platforms
         try:

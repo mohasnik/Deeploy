@@ -46,7 +46,7 @@ jobs:
         run: |
           cd /app/x-heep
           make venv
-          make mcu-gen EXTERNAL_MCU_GEN_TEMPLATES="$GITHUB_WORKSPACE/cmake/xheep/toolchain_gcc.cmake.tpl"
+          make mcu-gen EXTERNAL_MCU_GEN_TEMPLATES="$GITHUB_WORKSPACE/cmake/xheep/xheep_config.cmake.tpl"
           make verilator-build
       - name: Build Deeploy
         shell: bash

@@ -16,7 +16,6 @@ int main() {
 
   printf("Initializing network...\r\n");
 
-
   InitNetwork(0, 1);
 
   for (uint32_t buf = 0; buf < DeeployNetwork_num_inputs; buf++) {
@@ -29,7 +28,7 @@ int main() {
   timer_cycles_init();
   timer_start();
   RunNetwork(0, 1);
-  
+
   timer_val = timer_stop();
 
   int32_t tot_err = 0;
@@ -67,7 +66,7 @@ int main() {
   }
 
   printf("Errors: %d out of %d \r\n", tot_err, tot);
-  printf("Model Execution time (cycles) : %i\n", timer_val);
+  printf("Model Execution time (cycles) : %u\n", timer_val);
 
   return tot_err;
 }

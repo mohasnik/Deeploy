@@ -15,7 +15,7 @@ def setup_xheep_defaults(parser):
     parser.set_defaults(
         toolchain="GCC",
         toolchain_install_dir="/app/install/riscv",
-        skipsim=False,  
+        skipsim=False,
         cmake=[
             "-DXHEEP_TARGET=sim",
             # "-DXHEEP_LINKER=flash_load",
@@ -26,4 +26,4 @@ def setup_xheep_defaults(parser):
 
 if __name__ == "__main__":
     #TODO : make the co-simulation with X-HEEP repository (Verilator)
-    sys.exit(main(default_platform = "Xheep", default_simulator = "verilator", tiling_enabled = False, parser_setup_callback=setup_xheep_defaults))
+    sys.exit(main(default_platform = "Xheep", default_simulator = "verilator", tiling_enabled = False))

@@ -1,10 +1,10 @@
-# Copyright (C) 2026 EPFL.
-# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-FileCopyrightText: 2026 EPFL
+#
+# SPDX-License-Identifier: Apache-2.0
 #
 # File: xheep.cmake
 # Author: Mohammad Hossein Nikkhah
-# Description: 
+# Description:
 
 if(NOT XHEEP_HOME AND DEFINED ENV{XHEEP_HOME})
   set(XHEEP_HOME "$ENV{XHEEP_HOME}" CACHE PATH "Path to X-HEEP checkout" FORCE)

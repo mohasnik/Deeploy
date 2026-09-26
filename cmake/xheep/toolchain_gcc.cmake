@@ -1,6 +1,6 @@
-# Copyright (C) 2026 EPFL.
-# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-FileCopyrightText: 2026 EPFL
+#
+# SPDX-License-Identifier: Apache-2.0
 #
 # File: toolchain_gcc.cmake
 # Author: Mohammad Hossein Nikkhah
@@ -21,10 +21,13 @@ set(CMAKE_OBJDUMP ${TOOLCHAIN_PREFIX}-objdump)
 set(CMAKE_AR ${TOOLCHAIN_PREFIX}-ar)
 set(SIZE ${TOOLCHAIN_PREFIX}-size)
 
-
-
-set(ISA rv32imfc_zicsr CACHE STRING "X-HEEP RISC-V ISA")
-
+set(XHEEP_CONFIG_CMAKE "${CMAKE_CURRENT_LIST_DIR}/xheep_config.cmake")
+if(NOT EXISTS "${XHEEP_CONFIG_CMAKE}")
+  message(FATAL_ERROR
+    "Missing ${XHEEP_CONFIG_CMAKE}. Run X-HEEP mcu-gen with "
+    "EXTERNAL_MCU_GEN_TEMPLATES=<deeploy>/cmake/xheep/xheep_config.cmake.tpl")
+endif()
+include("${XHEEP_CONFIG_CMAKE}")
 
 set(ABI ilp32 CACHE STRING "X-HEEP RISC-V ABI")
 set(CMAKE_SYSTEM_PROCESSOR ${ISA} CACHE STRING "X-HEEP RISC-V ISA")
@@ -61,4 +64,3 @@ link_libraries(
 
 add_compile_definitions(__LINK_LD)
 add_compile_definitions(__TOOLCHAIN_GCC__)
-

@@ -640,11 +640,11 @@ class ReduceMaxChecker(SignPropTypeChecker):
 
     def _inferNumLevels(self, inputs: List[VariableBuffer],
                         operatorRepresentation: OperatorRepresentation) -> List[int]:
-        return [2**(self.input_types[0].referencedType.typeWidth)]
+        return [inputs[0].nLevels]
 
     def _inferSignedness(self, inputs: List[VariableBuffer],
                          operatorRepresentation: OperatorRepresentation) -> List[bool]:
-        return [True]
+        return [inputs[0]._signed]
 
 class TanhChecker(SignPropTypeChecker):
 
