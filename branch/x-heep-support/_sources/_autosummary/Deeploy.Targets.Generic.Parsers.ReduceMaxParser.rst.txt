@@ -1,0 +1,39 @@
+.. SPDX-FileCopyrightText: 2024 ETH Zurich and University of Bologna
+..
+.. SPDX-License-Identifier: Apache-2.0
+
+Deeploy.Targets.Generic.Parsers.ReduceMaxParser
+===============================================
+
+.. currentmodule:: Deeploy.Targets.Generic.Parsers
+
+.. autoclass:: ReduceMaxParser
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~ReduceMaxParser.__init__
+      ~ReduceMaxParser.parse
+      ~ReduceMaxParser.parseInputs
+      ~ReduceMaxParser.parseNode
+      ~ReduceMaxParser.parseNodeCtxt
+      ~ReduceMaxParser.parseOutputs
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ReduceMaxParser.operatorRepresentation
+   
+   
