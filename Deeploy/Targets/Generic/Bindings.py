@@ -20,15 +20,15 @@ from Deeploy.Targets.Generic.Templates import AddTemplate, BatchNormalizationTem
     FloatMaxPoolTemplate, FloatMulTemplate, FloatPadTemplate, FloatPowTemplate, FloatReduceMeanTemplate, \
     FloatReluTemplate, FloatSigmoidTemplate, FloatSoftmaxTemplate, FloatSqrtTemplate, FloatSubTemplate, \
     FloatSwishTemplate, GatherTemplate, GemmTemplate, IntegerDivTemplate, ITAMaxTemplate, ITAPartialMaxTemplate, \
-    MatMulTemplate, MaxPoolTemplate, MulTemplate, PadTemplate, QuantTemplate, ReduceMaxTemplate, ReduceMeanTemplate, \
+    MatMulTemplate, MaxPoolTemplate, MulTemplate, PadTemplate, QuantTemplate, ReduceMeanTemplate, \
     ReduceSumTemplate, RequantShiftTemplate, ReshapeTemplate, RQIntegerDivTemplate, RQSiGELUTemplate, SliceTemplate, \
-    SubTemplate, TanhTemplate, TransposeTemplate, iGELUTemplate, iLayernormTemplate, iRMSNormTemplate, \
+    SubTemplate, TransposeTemplate, iGELUTemplate, iLayernormTemplate, iRMSNormTemplate, \
     iSoftmaxTemplate
 from Deeploy.Targets.Generic.TypeCheckers import AddChecker, BatchNormChecker, ConcatChecker, ConvChecker, \
     DebugPrintChecker, DequantChecker, DivChecker, DummyChecker, FloatConcatChecker, GatherChecker, GELUChecker, \
     GEMMChecker, LayerNormChecker, MatMulChecker, MaxPoolChecker, MulChecker, PadChecker, QuantChecker, \
-    ReduceMaxChecker, ReduceMeanChecker, ReduceSumChecker, ReluChecker, RequantShiftChecker, ReshapeChecker, \
-    RQIntegerDivChecker, SliceChecker, SoftmaxChecker, TanhChecker, TransposeChecker
+    ReduceMeanChecker, ReduceSumChecker, ReluChecker, RequantShiftChecker, ReshapeChecker, RQIntegerDivChecker, \
+    SliceChecker, SoftmaxChecker, TransposeChecker
 
 BasicTransformer = CodeTransformation([ArgumentStructGeneration(), MemoryManagementGeneration(), FutureGeneration()])
 
@@ -423,18 +423,4 @@ BasicGlobalAveragePoolBindings = [
 BasicGlobalMaxPoolBindings = [
     NodeBinding(DummyChecker([PointerClass(float32_t)], [PointerClass(float32_t)]),
                 FloatGlobalMaxPoolTemplate.referenceTemplate, BasicTransformer)
-]
-
-### NEWLY ADDED LAYERS:
-BasicTanhBindings = [
-    NodeBinding(TanhChecker([PointerClass(float32_t)], [PointerClass(float32_t)]), TanhTemplate.referenceTemplate,
-                BasicTransformer)
-]
-
-BasicReduceMaxBindings = [
-    NodeBinding(ReduceMaxChecker([PointerClass(type)], [PointerClass(int32_t)]), ReduceMaxTemplate.referenceTemplate,
-                BasicTransformer) for type in IntegerDataTypes
-] + [
-    NodeBinding(ReduceMaxChecker([PointerClass(float32_t)], [PointerClass(float32_t)]),
-                ReduceMaxTemplate.referenceTemplate, BasicTransformer)
 ]
