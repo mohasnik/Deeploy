@@ -1080,7 +1080,7 @@ def test_xheep_kernels(test_name, deeploy_test_dir, toolchain, toolchain_dir, cm
                                 platform = platform_config["platform"],
                                 simulator = platform_config["simulator"],
                                 deeploy_test_dir = deeploy_test_dir,
-                                toolchain = "GCC",
+                                toolchain = toolchain,
                                 toolchain_dir = "/app/install/riscv",
                                 cmake_args = cmake_args,
                                 tiling = False)

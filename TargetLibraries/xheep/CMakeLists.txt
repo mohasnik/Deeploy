@@ -2,9 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-# File: CMakeLists.txt
 # Author: Mohammad Hossein Nikkhah
-# Description:
 
 if(NOT DEFINED XHEEP_CRT_SOURCES OR NOT DEFINED XHEEP_RUNTIME_SOURCES)
   message(FATAL_ERROR "Include cmake/xheep/xheep.cmake before TargetLibraries/xheep.")
