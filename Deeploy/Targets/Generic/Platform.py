@@ -17,13 +17,13 @@ from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicAveragePool1
     BasicPowBindings, BasicQuantBindings, BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, \
     BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, BasicSigmoidBindings, \
     BasicSliceBindings, BasicSoftmaxBindings, BasicSqrtBindings, BasicSubBindings, BasicSwishBindings, \
-    BasicTransposeBindings, DummyBinding
+    BasicTransposeBindings, DummyBinding, BasicReduceMaxBindings, BasicTanhBindings
 from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, BatchNormalizationLayer, CeilLayer, ClipLayer, \
     ConcatLayer, ConvLayer, ConvTransposeLayer, DebugPrintLayer, DequantLayer, DivLayer, ExpLayer, FloorLayer, \
     GatherLayer, GELULayer, GEMMLayer, GlobalAveragePoolLayer, GlobalMaxPoolLayer, GroupNormLayer, InstanceNormLayer, \
     ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, PowLayer, QuantLayer, ReduceMeanLayer, \
     ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, SigmoidLayer, \
-    SliceLayer, SoftmaxLayer, SqrtLayer, SubLayer, SwishLayer, TransposeLayer
+    SliceLayer, SoftmaxLayer, SqrtLayer, SubLayer, SwishLayer, TransposeLayer, ReduceMaxLayer, TanhLayer
 from Deeploy.Targets.Generic.Parsers import AddParser, AveragePool1DParser, AveragePool2DParser, BatchNormParser, \
     CeilParser, ClipParser, ConcatParser, ConvTranspose1DParser, DebugParser, DequantParser, DivParser, DummyParser, \
     ExpParser, FlattenParser, FloorParser, GatherParser, GELUParser, GenericConv1DParser, GenericConv2DParser, \
@@ -32,11 +32,11 @@ from Deeploy.Targets.Generic.Parsers import AddParser, AveragePool1DParser, Aver
     ITAMaxParser, ITAPartialMaxParser, LayerNormParser, MatMulParser, MaxPool1DParser, MulParser, Pad1DParser, \
     Pad2DParser, PowParser, QuantParser, ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, \
     ReshapeParser, RQIntegerDivParser, RQSiGELUParser, SigmoidParser, SliceParser, SoftmaxParser, SqrtParser, \
-    SubParser, SwishParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser
+    SubParser, SwishParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser, ReduceMaxParser, TanhParser
 from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, ExtractPaddingFromConvPass, \
     ExtractPaddingFromPoolPass, MatMulAddMergePass, MergeConstAddAndRequantPass, QuantPatternPass, \
-    iGELURequantMergePass
+    iGELURequantMergePass, UnrollReduceMaxPass
 
 AddMapper = NodeMapper(AddParser(), BasicAddBindings)
 SubMapper = NodeMapper(SubParser(), BasicSubBindings)
@@ -94,6 +94,8 @@ AveragePool1DMapper = NodeMapper(AveragePool1DParser(), BasicAveragePool1DBindin
 AveragePool2DMapper = NodeMapper(AveragePool2DParser(), BasicAveragePool2DBindings)
 GlobalAveragePoolMapper = NodeMapper(GlobalAveragePoolParser(), BasicGlobalAveragePoolBindings)
 GlobalMaxPoolMapper = NodeMapper(GlobalMaxPoolParser(), BasicGlobalMaxPoolBindings)
+TanhMapper = NodeMapper(TanhParser(), BasicTanhBindings)
+ReduceMaxMapper = NodeMapper(ReduceMaxParser(), BasicReduceMaxBindings)
 
 # Dummy nodes are intended for development purposes only!
 # They should always generate compiler errors to not accidentally end up in production code
@@ -154,6 +156,8 @@ GenericMapping = {
     'AveragePool': AveragePoolLayer([AveragePool1DMapper, AveragePool2DMapper]),
     'GlobalAveragePool': GlobalAveragePoolLayer([GlobalAveragePoolMapper]),
     'GlobalMaxPool': GlobalMaxPoolLayer([GlobalMaxPoolMapper]),
+    'Tanh': TanhLayer([TanhMapper]),
+    'ReduceMax': ReduceMaxLayer([ReduceMaxMapper])
     # # For example, you can use the DummpyMapper, in case you want to test
     # # deployment or optimizations with GlobalAveragePool nodes but did not yet
     # # implement the corresponding kernel
@@ -200,6 +204,7 @@ GenericOptimizer = TopologyOptimizer(
         ExtractPaddingFromPoolPass(),
         RemoveEmptyConvBiasPass(),
         RemoveOnlySingletonReduceMeanPass(),
+        UnrollReduceMaxPass(),
         # DebugPrintPass(r'.*[Mm]at[Mm]ul.*', position = 'after'),
     ],
     name = "GenericOptimizer")
