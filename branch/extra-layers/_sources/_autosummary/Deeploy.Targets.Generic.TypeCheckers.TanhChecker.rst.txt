@@ -1,0 +1,41 @@
+.. SPDX-FileCopyrightText: 2024 ETH Zurich and University of Bologna
+..
+.. SPDX-License-Identifier: Apache-2.0
+
+Deeploy.Targets.Generic.TypeCheckers.TanhChecker
+================================================
+
+.. currentmodule:: Deeploy.Targets.Generic.TypeCheckers
+
+.. autoclass:: TanhChecker
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~TanhChecker.__init__
+      ~TanhChecker.annotateDict
+      ~TanhChecker.checkOutputType
+      ~TanhChecker.signature
+      ~TanhChecker.typeCheck
+      ~TanhChecker.typeCheckNodeInputs
+      ~TanhChecker.typeInferGlobalCtxt
+      ~TanhChecker.typeInferOutput
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TanhChecker.typeDict
+   
+   
